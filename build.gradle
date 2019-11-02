@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
+}
+
+apply plugin: 'java'
+
+mainClassName = 'com.dragoninjector.supportbot.Main'
+
+group 'com.dragoninjector.supportbot'
+version '1.0'
+
+sourceCompatibility = targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+    jcenter {
+        url = "http://jitpack.io"
+    }
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
+}
+
+dependencies {
+//    JDA
+    compile 'net.dv8tion:JDA:3.8.3_462'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+    compile 'me.bhop:bJdaUtilities:1.6.1'
+
+//   Google
+    implementation group: 'com.google.inject', name: 'guice', version: '4.1.0'
+    implementation group: 'com.google.guava', name: 'guava', version: '24.0-jre'
+    compile 'com.google.code.gson:gson:2.8.1'
+    
+//    Logger
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.8.0-beta4'
+    
+//    MySQL
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.15'
+    
+//    Utils
+    compile 'com.vdurmont:emoji-java:4.0.0'
+    compile 'org.reflections:reflections:0.9.11'
+    compileOnly 'org.projectlombok:lombok:1.16.20'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'org.reflections', name: 'reflections', version: '0.9.5-RC2'
+    
+//    APIs
+    compile "club.minnced:discord-webhooks:0.1.7"
+
+}
+
+compileJava.options.encoding = 'UTF-8'
