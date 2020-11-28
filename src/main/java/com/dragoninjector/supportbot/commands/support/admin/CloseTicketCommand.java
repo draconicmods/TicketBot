@@ -8,10 +8,10 @@ import me.bhop.bjdautilities.ReactionMenu;
 import me.bhop.bjdautilities.command.annotation.Command;
 import me.bhop.bjdautilities.command.annotation.Execute;
 import me.bhop.bjdautilities.command.result.CommandResult;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +20,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.requests.RestAction;
 
 @Command(label = {"closeticket", "ticketclose"}, usage = "closeticket @User#Discriminator", description = "Transfers an open support ticket to the mentioned user", hideInHelp = true)
 public class CloseTicketCommand {
@@ -42,7 +42,7 @@ public class CloseTicketCommand {
 
         if (member.getUser().getIdLong() == userId || Util.isMemberStaff(member)) {
 
-            RestAction<Message> message1 = main.getJDA().getGuildById(main.getGuildID()).getTextChannelById(channelId).getMessageById(supportMsgId);
+            Message message1 = main.getJDA().getGuildById(main.getGuildID()).getTextChannelById(channelId).getHistory().getMessageById(supportMsgId);
             Consumer<Message> callback = (m) -> {
                 scheduledTask.execute(() -> {
                     String channelName = channel.getName().replace("\uD83D\uDD12", "");
@@ -76,9 +76,9 @@ public class CloseTicketCommand {
                             embed.addField("Staff Involved", "None", true);
                         }
                         if (Util.isLocked(channel)) {
-                            main.getLockedLogChannel().sendFile(main.getLogDirectory().resolve(channelName + ".txt").toFile(), new MessageBuilder().setEmbed(embed.build()).build()).queue();
+                            main.getLockedLogChannel().sendMessage(new MessageBuilder().setEmbed(embed.build()).build()).addFile(main.getLogDirectory().resolve(channelName + ".txt").toFile()).queue();
                         } else {
-                            main.getLogChannel().sendFile(main.getLogDirectory().resolve(channelName + ".txt").toFile(), new MessageBuilder().setEmbed(embed.build()).build()).queue();
+                            main.getLogChannel().sendMessage(new MessageBuilder().setEmbed(embed.build()).build()).addFile(main.getLogDirectory().resolve(channelName + ".txt").toFile()).queue();
                         }
                         main.getLogDirectory().resolve(channelName + ".txt").toFile().delete();
                         main.getJDA().getGuildById(main.getGuildID()).getTextChannelById(channelId).delete().queue();
@@ -99,7 +99,7 @@ public class CloseTicketCommand {
                     })
                     .onDisplay(display -> scheduledTask.schedule(() -> {
                 if (deleteChannel.get()) {
-                    message1.queue(callback);
+                    callback.accept(message1);
                 }
             }, 10, TimeUnit.SECONDS)).buildAndDisplay(channel);
             reactionMenu.destroyIn(10);

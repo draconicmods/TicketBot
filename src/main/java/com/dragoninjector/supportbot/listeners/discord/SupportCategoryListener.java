@@ -2,9 +2,9 @@ package com.dragoninjector.supportbot.listeners.discord;
 
 import com.dragoninjector.supportbot.SupportBot;
 import com.dragoninjector.supportbot.utils.Util;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,7 +37,7 @@ public class SupportCategoryListener extends ListenerAdapter {
             content.append("[").append(OffsetDateTime.now().format(format)).append("]");
             if (!event.getMessage().getEmbeds().isEmpty()) {
                 event.getMessage().getEmbeds().forEach((embed) -> {
-                    content.append(event.getMember().getEffectiveName()).append(": ").append("Embed").append(embed.toJSONObject());
+                    content.append(event.getMember().getEffectiveName()).append(": ").append("Embed").append(embed.toData().toString());
                 });
             }
             if (!event.getMessage().getMentionedMembers().isEmpty()) {

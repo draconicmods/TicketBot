@@ -1,6 +1,6 @@
 package com.dragoninjector.supportbot;
 
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

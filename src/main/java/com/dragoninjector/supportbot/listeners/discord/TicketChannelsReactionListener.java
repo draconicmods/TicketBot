@@ -4,15 +4,15 @@ import com.dragoninjector.supportbot.EmbedTemplates;
 import com.dragoninjector.supportbot.SupportBot;
 import com.dragoninjector.supportbot.utils.Util;
 import me.bhop.bjdautilities.ReactionMenu;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
-import net.dv8tion.jda.core.requests.RestAction;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.RestAction;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.api.entities.Member;
 
 public class TicketChannelsReactionListener extends ListenerAdapter {
 
@@ -65,7 +65,7 @@ public class TicketChannelsReactionListener extends ListenerAdapter {
 
     public void onCheckClicked(MessageReactionAddEvent event, TextChannel channel, String creation, Long messageId, Long userId) {
         event.getReaction().removeReaction(event.getUser()).queue();
-        RestAction<Message> message = event.getJDA().getGuildById(main.getGuildID()).getTextChannelById(channel.getId()).getMessageById(messageId);
+        Message message = event.getJDA().getGuildById(main.getGuildID()).getTextChannelById(channel.getId()).getHistory().getMessageById(messageId);
         Consumer<Message> callback = (m) -> {
             scheduledTask.execute(() -> {
                 String channelName = channel.getName().replace("\uD83D\uDD12", "");
@@ -99,9 +99,9 @@ public class TicketChannelsReactionListener extends ListenerAdapter {
                         embed.addField("Staff Involved", "None", true);
                     }
                     if (Util.isLocked(channel)) {
-                        main.getLockedLogChannel().sendFile(main.getLogDirectory().resolve(channelName + ".txt").toFile(), new MessageBuilder().setEmbed(embed.build()).build()).queue();
+                        main.getLockedLogChannel().sendMessage(new MessageBuilder().setEmbed(embed.build()).build()).addFile(main.getLogDirectory().resolve(channelName + ".txt").toFile()).queue();
                     } else {
-                        main.getLogChannel().sendFile(main.getLogDirectory().resolve(channelName + ".txt").toFile(), new MessageBuilder().setEmbed(embed.build()).build()).queue();
+                        main.getLogChannel().sendMessage(new MessageBuilder().setEmbed(embed.build()).build()).addFile(main.getLogDirectory().resolve(channelName + ".txt").toFile()).queue();
                     }
                     main.getLogDirectory().resolve(channelName + ".txt").toFile().delete();
                     channel.delete().queue();
@@ -122,7 +122,7 @@ public class TicketChannelsReactionListener extends ListenerAdapter {
                 })
                 .onDisplay(display -> scheduledTask.schedule(() -> {
             if (deleteChannel.get()) {
-                message.queue(callback);
+                callback.accept(message);
             }
         }, 30, TimeUnit.SECONDS)).buildAndDisplay(channel);
         reactionMenu.destroyIn(30);

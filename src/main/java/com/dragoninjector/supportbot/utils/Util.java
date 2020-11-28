@@ -1,10 +1,10 @@
 package com.dragoninjector.supportbot.utils;
 
 import com.dragoninjector.supportbot.SupportBot;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 public class Util {
 
@@ -41,7 +41,7 @@ public class Util {
             String cTopicFull = channel.getTopic();
             String[] cTopicSplit = cTopicFull.split(" "); // https://regex101.com/r/r1zvJ6/1
             String supportMsgId = cTopicSplit[8];
-            Message message = channel.getMessageById(supportMsgId).complete();
+            Message message = channel.getHistory().getMessageById(supportMsgId);
             if (message != null) {
                 return message.getAuthor().isBot() && message.getAuthor().getIdLong() == message.getJDA().getSelfUser().getIdLong();
             }

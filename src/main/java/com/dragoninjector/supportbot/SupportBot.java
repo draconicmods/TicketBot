@@ -16,12 +16,11 @@ import com.dragoninjector.supportbot.commands.support.admin.UnlockTicketCommand;
 import com.google.gson.JsonObject;
 import me.bhop.bjdautilities.Messenger;
 import me.bhop.bjdautilities.command.CommandHandler;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.events.Event;
-import net.dv8tion.jda.core.hooks.InterfacedEventManager;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.*;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.GenericEvent;
 
 public class SupportBot {
 
@@ -74,7 +75,7 @@ public class SupportBot {
             this.jda = new JDABuilder(AccountType.BOT)
                     .setToken(mainConfig.getConfigValue("token").getAsString())
                     .setEventManager(new ThreadedEventManager())
-                    .setGame(Game.playing("with tickets"))
+                    .setActivity(Activity.playing("with tickets"))
                     .build();
             jda.awaitReady();
 
@@ -213,7 +214,7 @@ public class SupportBot {
         private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1);
 
         @Override
-        public void handle(Event e) {
+        public void handle(GenericEvent e) {
             executor.submit(() -> super.handle(e));
         }
     }

@@ -7,10 +7,10 @@ import me.bhop.bjdautilities.ReactionMenu;
 import me.bhop.bjdautilities.command.annotation.Command;
 import me.bhop.bjdautilities.command.annotation.Execute;
 import me.bhop.bjdautilities.command.result.CommandResult;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.List;
 
@@ -25,25 +25,24 @@ public class OrderCommand {
         String[] split = channel.getTopic().split(" ");
         long messageId = Long.valueOf(split[8]);
         long authorId = Long.valueOf(split[5]);
-        channel.getMessageById(messageId).queue(msg -> {
-            ReactionMenu reaction = new ReactionMenu.Import(msg).build();
-            EditableMessage originalMessage = reaction.getMessage();
-            if (message.getAuthor().getIdLong() == authorId) {
-                // Build replacement embed message for the channel containing the new order number.
-                EmbedBuilder embedBuilder = new EmbedBuilder()
-                        .setFooter(originalMessage.getEmbeds().get(0).getFooter().getText(), originalMessage.getEmbeds().get(0).getFooter().getProxyIconUrl())
-                        .setColor(originalMessage.getEmbeds().get(0).getColorRaw())
-                        .addField(originalMessage.getEmbeds().get(0).getFields().get(0).getName(), originalMessage.getEmbeds().get(0).getFields().get(0).getValue(), true) // Author
-                        .addField(originalMessage.getEmbeds().get(0).getFields().get(1).getName(), String.join(" ", args), true) // Order
-                        .addField(originalMessage.getEmbeds().get(0).getFields().get(2).getName(), originalMessage.getEmbeds().get(0).getFields().get(2).getValue(), true); // Serial
-                // If the embed had ticket information make sure to keep it.
-                if (originalMessage.getEmbeds().get(0).getFields().size() == 4) {
-                    embedBuilder.addField(originalMessage.getEmbeds().get(0).getFields().get(3).getName(), originalMessage.getEmbeds().get(0).getFields().get(3).getValue(), true); // Ticket
-                }
-
-                reaction.getMessage().setContent(embedBuilder.build());
+        Message msg = channel.getHistory().getMessageById(messageId);
+        ReactionMenu reaction = new ReactionMenu.Import(msg).build();
+        EditableMessage originalMessage = reaction.getMessage();
+        if (message.getAuthor().getIdLong() == authorId) {
+            // Build replacement embed message for the channel containing the new order number.
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+                    .setFooter(originalMessage.getEmbeds().get(0).getFooter().getText(), originalMessage.getEmbeds().get(0).getFooter().getProxyIconUrl())
+                    .setColor(originalMessage.getEmbeds().get(0).getColorRaw())
+                    .addField(originalMessage.getEmbeds().get(0).getFields().get(0).getName(), originalMessage.getEmbeds().get(0).getFields().get(0).getValue(), true) // Author
+                    .addField(originalMessage.getEmbeds().get(0).getFields().get(1).getName(), String.join(" ", args), true) // Order
+                    .addField(originalMessage.getEmbeds().get(0).getFields().get(2).getName(), originalMessage.getEmbeds().get(0).getFields().get(2).getValue(), true); // Serial
+            // If the embed had ticket information make sure to keep it.
+            if (originalMessage.getEmbeds().get(0).getFields().size() == 4) {
+                embedBuilder.addField(originalMessage.getEmbeds().get(0).getFields().get(3).getName(), originalMessage.getEmbeds().get(0).getFields().get(3).getValue(), true); // Ticket
             }
-        });
+
+            reaction.getMessage().setContent(embedBuilder.build());
+        }
         return CommandResult.success();
     }
 }

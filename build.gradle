@@ -9,7 +9,7 @@ apply plugin: 'java'
 mainClassName = 'com.dragoninjector.supportbot.Main'
 
 group 'com.dragoninjector.supportbot'
-version '1.0'
+version '1.1'
 
 sourceCompatibility = targetCompatibility = 1.8
 
@@ -22,13 +22,16 @@ repositories {
     maven {
         url 'https://oss.sonatype.org/content/repositories/snapshots/'
     }
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
 //    JDA
-    compile 'net.dv8tion:JDA:3.8.3_462'
+    compile 'net.dv8tion:JDA:4.2.0_198'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
-    compile 'me.bhop:bJdaUtilities:1.6.1'
+    compile name: 'bJdaUtilities-1.0.0'
 
 //   Google
     implementation group: 'com.google.inject', name: 'guice', version: '4.1.0'
@@ -50,7 +53,7 @@ dependencies {
     compile group: 'org.reflections', name: 'reflections', version: '0.9.5-RC2'
     
 //    APIs
-    compile "club.minnced:discord-webhooks:0.1.7"
+    compile "club.minnced:discord-webhooks:0.5.0"
 
 }
 

@@ -9,10 +9,10 @@ import me.bhop.bjdautilities.ReactionMenu;
 import me.bhop.bjdautilities.command.annotation.Command;
 import me.bhop.bjdautilities.command.annotation.Execute;
 import me.bhop.bjdautilities.command.result.CommandResult;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -57,19 +57,18 @@ public class TransferTicketCommand {
                 channel.getManager().setTopic(channel.getTopic().replace(userId.toString(), finalMentionId)).complete();
                 channel.getManager().putPermissionOverride(newAuthor, 101440L, 0L).complete();
                 // Replace author information in first message embed.
-                channel.getMessageById(messageId).queue(msg -> {
-                    ReactionMenu reaction = new ReactionMenu.Import(msg).build();
-                    EditableMessage originalMessage = reaction.getMessage();
-                    EmbedBuilder embedBuilder = new EmbedBuilder()
-                            .setFooter(originalMessage.getEmbeds().get(0).getFooter().getText(), originalMessage.getEmbeds().get(0).getFooter().getProxyIconUrl())
-                            .setColor(originalMessage.getEmbeds().get(0).getColorRaw())
-                            .addField(originalMessage.getEmbeds().get(0).getFields().get(0).getName(), newAuthor.getAsMention(), true) // Author
-                            .addField(originalMessage.getEmbeds().get(0).getFields().get(1).getName(), originalMessage.getEmbeds().get(0).getFields().get(1).getValue(), true) // Order
-                            .addField(originalMessage.getEmbeds().get(0).getFields().get(2).getName(), originalMessage.getEmbeds().get(0).getFields().get(2).getValue(), true) // Serial
-                            .addField(originalMessage.getEmbeds().get(0).getFields().get(3).getName(), originalMessage.getEmbeds().get(0).getFields().get(3).getValue(), true); // Ticket
-                    reaction.getMessage().setContent(embedBuilder.build());
-                    channel.getManager().setTopic("Creation date " + channel.getCreationTime().format(dateFormat) + " Authors ID: " + finalMentionId + " Message ID: " + reaction.getMessage().getIdLong() + " Channel ID: " + channel.getIdLong()).queue();
-                });
+                Message msg = channel.getHistory().getMessageById(messageId);
+                ReactionMenu reaction = new ReactionMenu.Import(msg).build();
+                EditableMessage originalMessage = reaction.getMessage();
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setFooter(originalMessage.getEmbeds().get(0).getFooter().getText(), originalMessage.getEmbeds().get(0).getFooter().getProxyIconUrl())
+                        .setColor(originalMessage.getEmbeds().get(0).getColorRaw())
+                        .addField(originalMessage.getEmbeds().get(0).getFields().get(0).getName(), newAuthor.getAsMention(), true) // Author
+                        .addField(originalMessage.getEmbeds().get(0).getFields().get(1).getName(), originalMessage.getEmbeds().get(0).getFields().get(1).getValue(), true) // Order
+                        .addField(originalMessage.getEmbeds().get(0).getFields().get(2).getName(), originalMessage.getEmbeds().get(0).getFields().get(2).getValue(), true) // Serial
+                        .addField(originalMessage.getEmbeds().get(0).getFields().get(3).getName(), originalMessage.getEmbeds().get(0).getFields().get(3).getValue(), true); // Ticket
+                reaction.getMessage().setContent(embedBuilder.build());
+                channel.getManager().setTopic("Creation date " + channel.getTimeCreated().format(dateFormat) + " Authors ID: " + finalMentionId + " Message ID: " + reaction.getMessage().getIdLong() + " Channel ID: " + channel.getIdLong()).queue();
                 // Build the new channel name using the new author and the old channel random ID for history purposes.
                 String newChannel = Util.getSafeName(newAuthor) + StringUtils.right(channel.getName(), 6);
                 // Rename the log files so the channel history will be complete when the ticket is closed.

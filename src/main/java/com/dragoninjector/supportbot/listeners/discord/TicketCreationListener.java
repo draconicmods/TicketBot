@@ -4,12 +4,12 @@ import com.dragoninjector.supportbot.EmbedTemplates;
 import com.dragoninjector.supportbot.SupportBot;
 import com.dragoninjector.supportbot.utils.Util;
 import me.bhop.bjdautilities.ReactionMenu;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.awt.*;
 import java.io.File;
@@ -69,7 +69,7 @@ public class TicketCreationListener extends ListenerAdapter {
             } else {
                 supportMessage = new ReactionMenu.Builder(event.getJDA()).setStartingReactions("\u2705", "\uD83D\uDD12").setEmbed(message.addField("Ticket: ", userMessage, true).build()).buildAndDisplay(supportChannel);
             }
-            supportChannel.getManager().setTopic("Creation date: " + supportChannel.getCreationTime().format(dateFormat) + " Authors ID: " + event.getAuthor().getIdLong() + " Message ID: " + supportMessage.getMessage().getIdLong() + " Channel ID: " + supportChannel.getIdLong()).queue();
+            supportChannel.getManager().setTopic("Creation date: " + supportChannel.getTimeCreated().format(dateFormat) + " Authors ID: " + event.getAuthor().getIdLong() + " Message ID: " + supportMessage.getMessage().getIdLong() + " Channel ID: " + supportChannel.getIdLong()).queue();
 
             Runnable task = () -> main.getMessenger().sendEmbed(supportChannel, EmbedTemplates.ERROR.getEmbed().setDescription("For quicker support, send ``/order`` followed by your order number, then ``/serial`` followed by your serial number.").build());
             executorService.schedule(task, 5, TimeUnit.SECONDS);
